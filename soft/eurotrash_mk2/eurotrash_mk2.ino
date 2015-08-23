@@ -109,7 +109,7 @@ uint32_t _FADE_TIMESTAMP_F_CHANGE = 0;
 uint16_t FADE_LEFT, FADE_RIGHT, _EOF_L_OFF, _EOF_R_OFF;
 uint32_t _LCLK_TIMESTAMP, _RCLK_TIMESTAMP, _EOF_L_TIMESTAMP, _EOF_R_TIMESTAMP; // trigger + E-o-F timestamps
 
-uint16_t SPI_FLASH_STATUS = 1;
+uint16_t SPI_FLASH_STATUS = 0x0;
 
 /* ------------------------- pins ----------------------------------- */
 
