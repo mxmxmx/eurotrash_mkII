@@ -6,7 +6,7 @@
 
 /* --------------------- display simple message --------------------- */
 
-void _display(char *_disp) 
+void _display(const char *_disp) 
 {
   u8g_FirstPage(&u8g);
   do {

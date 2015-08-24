@@ -29,18 +29,17 @@ void leftright() {
 
 void _play(struct audioChannel* _channel) {
   
-      uint16_t _swap, _bank, _numVoice, _id, _state, _cv;
+      uint16_t _swap, _bank, _numVoice, _id, _state;
       int32_t _startPos;
       
       _swap   = _channel->swap;   
       _state  = _channel->state;
       _bank   = _channel->bank;     
       _id     = _channel->id; 
-      _cv     = _channel->cv0; 
       
       _numVoice = _swap + _id*CHANNELS; // select audio object # 1,2 (LEFT) or 3,4 (RIGHT) 
       // cv + encoder 
-      _startPos =  _cv + _channel->enc0;        
+      _startPos = _channel->cv0 + _channel->enc0;        
       // limits : 
       _startPos = _startPos < 0 ?  0 : _startPos;    // limit  
       _startPos = _startPos < CTRL_RESOLUTION ? _startPos : (CTRL_RESOLUTION - 0x1);
@@ -99,19 +98,21 @@ void eof_right() {
 void update_eof(uint8_t _c) {
        
        uint8_t _channel;
-       int32_t _eof; 
+       int32_t _eof, _prev_eof; 
         
        _channel = _c;
        _eof = audioChannels[_channel]->cvX + audioChannels[_channel]->encX;  // encoder value + cv 
+       _prev_eof = audioChannels[_channel]->posX; // prev value
        
-       // change ? 
-       if (audioChannels[_channel]->posX != _eof) {
+        // limits :        
+        _eof = _eof < 0 ? 0 : _eof;
+        _eof = _eof < CTRL_RESOLUTION ? _eof : CTRL_RESOLUTION - 0x1;
+       
+        // change ? 
+       if (_prev_eof != _eof) {
      
            // store :
            audioChannels[_channel]->posX = _eof;
-           // limits :        
-           _eof = _eof < 0 ? 0 : _eof;
-           _eof = _eof < CTRL_RESOLUTION ? _eof : CTRL_RESOLUTION - 0x1;
            
            // factor in start position:
            int32_t _srt =  audioChannels[_channel]->pos0;    
