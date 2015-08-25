@@ -16,10 +16,11 @@
 *
 *
 *  - things-to-do :
-*    - retrigger limit (avoid hammering this too much)
+
 *    - erase flash from within the app (atm, this needs a separate sketch: EraseEverything.ino)
-*    - make menu nice
-*    - stay in menu item (?)
+*    - make menu nice (phew)
+*    - stay in menu item when switching channels, banks (?)
+*    - eof (when using FL)
 */
 
 #include <Audio.h>
@@ -150,6 +151,7 @@ void FASTRUN CLK_ISR_L()
 { 
   LCLK = true; 
 }
+
 void FASTRUN CLK_ISR_R() 
 { 
   RCLK = true; 
@@ -159,7 +161,7 @@ IntervalTimer UI_timer, ADC_timer;
 volatile uint8_t UI  = false;
 volatile uint8_t _ADC = false;
 
-#define UI_RATE  10000     // UI update rate (in us)
+#define UI_RATE  25000     // UI update rate (in us)
 #define ADC_RATE 250       // ADC sampling rate (*4)
 #define ADC_RES 10         // ADC resolution
 extern uint16_t _MIDPOINT[]; // ~ 1.65V offset

@@ -8,9 +8,10 @@
 uint16_t _MENU_PAGE[CHANNELS] = {0,0}; // active menu item
 const uint16_t DISPLAY_LEN = 9;        // 8 (8.3) + /0
 const uint16_t NAME_LEN = 13;          // 8.3
-uint16_t filedisplay[CHANNELS];        // file on display
-char _display_file[] = "            "; // 
+uint16_t filedisplay[CHANNELS];        // file on display (#)
+char _display_file[] = "            "; // file on display (string) 
 uint8_t _REDRAW = 0x0;                 // redraw menu
+uint8_t _toggle = 0x0;                 // aux var.
 
 // channel global params
 const uint16_t MAXFILES = 128;       // we don't allow more than 128 files (for no particular reason); 
@@ -107,6 +108,7 @@ enum {
   FLASHING
 }; // SPI flash progress messages
   
+
 /* ----------------------------------------------------------------------- */
 
 void encoder_ISR() 
@@ -118,16 +120,21 @@ void encoder_ISR()
 
 void _UI() 
 { 
-    uint16_t _event = _EVENT;
-    int16_t _encoder = update_encoder();
-    
-    // buttons ?
-    if (_event) process_buttons(_event); 
-    else _EVENT = update_buttons();
-    // encoder ?
-    if (_encoder) process_encoder(_ACTIVE_CHANNEL, _encoder);
-    // redraw menu ? 
-    if (_REDRAW) _do_display();
+    _toggle = ~_toggle & 1u;
+    // process controls or redraw display, if need be:
+    if(_toggle)  
+    {
+        uint16_t _event = _EVENT;
+        int16_t _encoder = update_encoder();
+        
+        // buttons ?
+        if (_event) process_buttons(_event); 
+        else _EVENT = update_buttons();
+        // encoder ?
+        if (_encoder) process_encoder(_ACTIVE_CHANNEL, _encoder);
+        // redraw menu ? 
+    }
+    else if (_REDRAW) _do_display();
     UI = false;
 }
 

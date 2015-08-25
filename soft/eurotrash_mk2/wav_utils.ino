@@ -128,9 +128,9 @@ void update_eof(uint8_t _c) {
 
 void _PAUSE_EOF_L() { 
 
-    if (millis() - _EOF_L_TIMESTAMP > FADE_OUT) { 
+    if (!audioChannels[LEFT]->bank && millis() - _EOF_L_TIMESTAMP > FADE_OUT) { 
   
-        uint16_t _state = audioChannels[LEFT]->state;
+         uint16_t _state = audioChannels[LEFT]->state;
       
         if (_state == _PAUSE) { // pause file? 
           
@@ -140,14 +140,15 @@ void _PAUSE_EOF_L() {
         }
         else if (millis() - _LCLK_TIMESTAMP > (audioChannels[LEFT]->eof + _WAIT)) audioChannels[LEFT]->state = _PLAY; // resume 
         _EOF_L_OFF = false;
-     }  
+    }  
 }
 
 void _PAUSE_EOF_R() {
   
-     if (millis() - _EOF_R_TIMESTAMP > FADE_OUT) { 
+     if (!audioChannels[RIGHT]->bank && millis() - _EOF_R_TIMESTAMP > FADE_OUT) { 
+       
         uint16_t _state = audioChannels[RIGHT]->state;
- 
+        
         if (_state == _PAUSE) {   // pause file? 
            
               uint16_t _swap = (~audioChannels[RIGHT]->swap & 1u) + CHANNELS; 

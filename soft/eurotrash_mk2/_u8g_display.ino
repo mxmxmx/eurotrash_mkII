@@ -52,27 +52,43 @@ void _do_display()
   sprintf(s, "%d",srt);
   sprintf(e, "%d",eof);
   memcpy(_dis, _thebanks[_sel], 0x8);
+
+  // this is one ugly hack. there's too much interference w/ timing otherwise:
   
   switch (_MENU_PAGE[_ACTIVE_CHANNEL]) { 
      
-     case FILESELECT: {
+     case FILESELECT: { 
         u8g_FirstPage(&u8g);
         do {
+            leftright();  
             // cursor 
-            u8g_DrawBox(&u8g, 0, 4, 129, 16);    
-            u8g_SetDefaultBackgroundColor(&u8g);  
+            u8g_DrawBox(&u8g, 0, 4, 129, 16);   
+            leftright();  
+            
+            u8g_SetDefaultBackgroundColor(&u8g); 
+            leftright(); 
+            
             // filename    
             u8g_DrawStr(&u8g, 5, 15, _dis);
+            leftright();  
             u8g_DrawStr(&u8g, 65, 15, _display_file);
+            leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
+            leftright();  
             //
             u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            leftright();  
             // start
             u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 45, s);
+            leftright(); 
+            
             // eof
             u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 60, e);
+            leftright();  
             
         } while(u8g_NextPage(&u8g)); 
         break;  
@@ -80,21 +96,32 @@ void _do_display()
      case STARTPOS:  {
         u8g_FirstPage(&u8g);
         do {  
+            leftright();  
             // filename  
             u8g_DrawStr(&u8g, 5, 15, _dis);
+            leftright();  
             u8g_DrawStr(&u8g, 65, 15, _display_file);
+            leftright();  
             //
             u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            leftright();  
             // cursor 
             u8g_DrawBox(&u8g, 0, 34, 129, 16); 
+            leftright();  
             u8g_SetDefaultBackgroundColor(&u8g);
+            leftright();  
             // start
             u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 45, s);
+            leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
+            leftright();  
             // eof
             u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 60, e);
+            leftright();  
             
         } while(u8g_NextPage(&u8g)); 
         break;  
@@ -102,26 +129,37 @@ void _do_display()
      case ENDPOS:  {
         u8g_FirstPage(&u8g);
         do {
+            leftright();  
             // filename
             u8g_DrawStr(&u8g, 5, 15, _dis);
+            leftright();  
             u8g_DrawStr(&u8g, 65, 15, _display_file);
+            leftright();  
             //
             u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            leftright();  
             // start
             u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 45, s);
+            leftright();  
             // cursor
             u8g_DrawBox(&u8g, 0, 50, 129, 16);    
+            leftright();  
             u8g_SetDefaultBackgroundColor(&u8g); 
+            leftright();  
             // eof
             u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            leftright();  
             u8g_DrawStr(&u8g, 100, 60, e);
+            leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
-            
+            leftright();  
+        
         } while(u8g_NextPage(&u8g)); 
         break;  
      }
-    }
+  }   
 } 
 
 /* ----------------------- init display --------------------------- */
@@ -132,7 +170,7 @@ void init_display()
    
     _file = audioChannels[_ACTIVE_CHANNEL]->file_wav; 
     _bank = audioChannels[_ACTIVE_CHANNEL]->bank;
-    
+
     _display_file[0x0] = '\xb7';
     memcpy(_display_file+0x2, DISPLAYFILES[_file + _bank*MAXFILES], DISPLAY_LEN);
     _REDRAW = 0x1;
