@@ -200,7 +200,7 @@ void setup() {
   SPI.setSCK(14);
   
    // init display:
-  u8g_InitComFn(&u8g, &u8g_dev_sh1106_128x64_i2c, u8g_com_hw_i2c_fn);
+  u8g_InitComFn(&u8g, &u8g_dev_sh1106_128x64_2x_i2c, u8g_com_hw_i2c_fn);
    // splash screen:
   _hello();
   delay(1000);

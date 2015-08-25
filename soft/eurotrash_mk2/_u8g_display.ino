@@ -159,7 +159,7 @@ void _do_display()
         } while(u8g_NextPage(&u8g)); 
         break;  
      }
-  }   
+  } 
 } 
 
 /* ----------------------- init display --------------------------- */
