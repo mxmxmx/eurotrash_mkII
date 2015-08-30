@@ -3,12 +3,15 @@
 
 SerialFlashFile file;
 
-//#define REV1  // uncomment if using rev 1 boards
+//#define _MK1_  // uncomment if using mk1 boards
+#define _MK2_
 
-#ifdef REV1
-  #define CS_MEM 15   // rev1
+#if defined (_MK2_)
+  #define CS_MEM 6    // mk2
+#elif defined (_MK1_)     
+  #define CS_MEM 15   // mk1, rev1
 #else
-  #define CS_MEM 13   // rev0
+  #define CS_MEM 13   // mk1, rev0
 #endif
 
 const unsigned long testIncrement = 4096;
