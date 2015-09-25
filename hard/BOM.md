@@ -51,7 +51,7 @@ voltage regulators/references:
 
 misc:
 
-- teensy3.1  : 1x (**don't forget to cut the usb/power trace**) (http://store.oshpark.com/products/teensy-3-1)
+- teensy3.1 or 3.2 : 1x (**don't forget to cut the usb/power trace**) (http://store.oshpark.com/products/teensy-3-1)
 - 2x single row precision ("machined" / "round") pin header and sockets for teensy 3.1 (only the outer pins are used, so we need 14 pin, RM2.54)
 - 2x5 RM2.54 pin header (eurorack power connector)
 - molex micro SD card socket (# 502774-0891, mouser # 538-502774-0891)
