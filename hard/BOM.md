@@ -38,7 +38,7 @@ ICs/semis:
 
 - MMBT3904 (NPN trans., sot-23) : 2x (mouser # 512-MMBT3904)
 - SM5817 diodes : 2x (mouser # 833-SM5817PL-TP)
-- **TL072** (SOIC) : 1x (‡)
+- **TL072** (SOIC) : 1x (or fancier -- see note below (‡))
 - MCP6004 (SOIC)   : 1x
 - PCM5102a (TSSOP) : 1x (mouser # 595-PCM5102APWR)
 
@@ -66,8 +66,8 @@ misc:
 
 notes: 
 
-(‡) something fancier can be used for the audio output (the dual op amp being used for audio output).
-i've tried both _OPA1662 and AD8599_ in the audio path - not sure whether i'd notice the difference, YMMV. 
+(‡) something fancier can be used for the audio output ( = the dual op amp being used for audio output).
+i've tried **OPA1662, AD8599, and LME49720** in the audio path - not sure whether i'd notice the difference, YMMV. but it's reassuring, sort of.
      
 (‡‡) the spi flash is optional; it's a very useful add-on though, as it allows for lower-latency one-shot triggering compared to streaming from SD card (~4ms vs ~8ms). the winbond ICs are a bit hard to find, i got mine from alibaba. (there's pin/software compatible alternative ICs at mouser and the usual places, which should work, see here for a list of supported devices: https://github.com/PaulStoffregen/SerialFlash (NB: the footprint is soic-8)); alternatively, the SPI SRAM thing may be used (which is supported by the pjrc audio API, but not part of the firmware), cf http://www.pjrc.com/teensy/gui/?info=AudioEffectDelayExternal for details
 
