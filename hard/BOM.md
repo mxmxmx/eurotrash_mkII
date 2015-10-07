@@ -29,7 +29,7 @@
 - 2u2  :         2x (16V+)
 - 10uF :         3x (16V+, may be 0805)
   
-caps (electrolytic), SMD (5.3 mm) (25V or better):
+caps (electrolytic), SMD (5.3 mm) (25V or better) (‡):
 
 - 22uf :	  2x
 - 33uf : 	  2x
@@ -38,7 +38,7 @@ ICs/semis:
 
 - MMBT3904 (NPN trans., sot-23) : 2x (mouser # 512-MMBT3904)
 - SM5817 diodes : 2x (mouser # 833-SM5817PL-TP)
-- **TL072** (SOIC) : 1x (or fancier -- see note below (‡))
+- **TL072** (SOIC) : 1x (or fancier -- see note below (‡‡))
 - MCP6004 (SOIC)   : 1x
 - PCM5102a (TSSOP) : 1x (mouser # 595-PCM5102APWR)
 
@@ -55,7 +55,7 @@ misc:
 - 2x single row precision ("machined" / "round") pin header and sockets for teensy 3.1 (only the outer pins are used, so we need 14 pin, RM2.54)
 - 2x5 RM2.54 pin header (eurorack power connector)
 - molex micro SD card socket (# 502774-0891, mouser # 538-502774-0891)
-- **winbond W25Q128FV** (SPI flash, SOIC-8) (optional) or **SPI SRAM (23LC1024)** (even more optional) (SOIC-8) (‡‡) 
+- **winbond W25Q128FV** (SPI flash, SOIC-8) (optional) or **SPI SRAM (23LC1024)** (even more optional) (SOIC-8) (‡‡‡) 
 - jacks: 8 thonkiconn (or kobiconn)
 - rotary encoder w/ switch: 1x (†††)
 - knobs (to match): 2x (ideally, with small(ish) diameter (12mm or so max) and no indication line. Cliff K88, for instance, are fairly nice/suitable)
@@ -66,10 +66,12 @@ misc:
 
 notes: 
 
-(‡) something fancier can be used for the audio output ( = the dual op amp being used for audio output).
+(‡) the footprint is for 6.3mm, so anything with diameter ≤ 6.3mm should work. ~ 5mm will be easier to hand-solder.
+
+(‡‡) something fancier can be used for the audio output ( = the dual op amp being used for audio output).
 i've tried **OPA1662, AD8599, and LME49720** in the audio path - not sure whether i'd notice the difference, YMMV. but it's reassuring, sort of.
      
-(‡‡) the spi flash is optional; it's a very useful add-on though, as it allows for lower-latency one-shot triggering compared to streaming from SD card (~4ms vs ~8ms). the winbond ICs are a bit hard to find, i got mine from alibaba. (there's pin/software compatible alternative ICs at mouser and the usual places, which should work, see here for a list of supported devices: https://github.com/PaulStoffregen/SerialFlash (NB: the footprint is soic-8)); alternatively, the SPI SRAM thing may be used (which is supported by the pjrc audio API, but not part of the firmware), cf http://www.pjrc.com/teensy/gui/?info=AudioEffectDelayExternal for details
+(‡‡‡) the spi flash is optional; it's a very useful add-on though, as it allows for lower-latency one-shot triggering compared to streaming from SD card (~4ms vs ~8ms). the winbond ICs are a bit hard to find, i got mine from alibaba. (there's pin/software compatible alternative ICs at mouser and the usual places, which should work, see here for a list of supported devices: https://github.com/PaulStoffregen/SerialFlash (NB: the footprint is soic-8)); alternatively, the SPI SRAM thing may be used (which is supported by the pjrc audio API, but not part of the firmware), cf http://www.pjrc.com/teensy/gui/?info=AudioEffectDelayExternal for details
 
 (†) pinout must be VCC - GND - SCL - SDA. while any OLED w/ SH1106 driver should work, here's two that's confirmed working: [here](http://www.ebay.de/itm/271817542866) and [here](http://www.ebay.de/itm/331132247980); they can also be had from amazon or aliexpress, cf [here](http://www.amazon.com/Serial-128X64-Display-Module-Arduino/dp/B00JM7SWI4/ref=sr_1_2?s=industrial&ie=UTF8&qid=1443270690&sr=1-2&keywords=1.3%22+Serial+128X64+OLED) or [here](http://de.aliexpress.com/item/white-1-3-I2C-IIC-Serial-128X64-12864-OLED-LCD-LED-Display-Module-for-Arduino-51/1669386183.html?isOrigTitle=true) or [here](http://www.alibaba.com/product-detail/1-3-I2C-IIC-Serial-128X64_1982440011.html?spm=a2700.7724838.30.1.5a3TpQ)
 
