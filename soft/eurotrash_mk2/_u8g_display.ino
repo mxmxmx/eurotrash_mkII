@@ -37,7 +37,6 @@ void _display_num(int16_t _num)
 void _do_display()
 {
   _REDRAW = 0x0; 
-  
   int16_t srt, eof, _bank, _sel, _ch;
   char s[0x6], e[0x6], _dis[0x8];
   
@@ -51,9 +50,10 @@ void _do_display()
   // make things printable
   sprintf(s, "%d",srt);
   sprintf(e, "%d",eof);
-  memcpy(_dis, _thebanks[_sel], 0x8);
+  memcpy(_dis, _thebanks[_sel], 0x9);
 
-  // this is one ugly hack. there's too much interference w/ timing otherwise:
+  // below is one ugly hack. there's too much interference w/ timing otherwise:
+  leftright();
   
   switch (_MENU_PAGE[_ACTIVE_CHANNEL]) { 
      
@@ -64,7 +64,6 @@ void _do_display()
             // cursor 
             u8g_DrawBox(&u8g, 0, 4, 129, 16);   
             leftright();  
-            
             u8g_SetDefaultBackgroundColor(&u8g); 
             leftright(); 
             

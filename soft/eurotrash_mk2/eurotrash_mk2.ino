@@ -30,7 +30,6 @@
 #include <EEPROM.h>
 #include <rotaryplus.h> 
 #include <SerialFlash.h>
-#include <play_serial_raw.h>
 #include <u8g_i2c.h>
 
 File root;
