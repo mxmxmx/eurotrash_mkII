@@ -179,7 +179,7 @@ void ADCtimerCallback()
 void setup() {
   
   //while (!Serial) {;} 
-  delay(50); // wait for display ... 
+  delay(150); // wait for display ... 
   analogReference(EXTERNAL);
   analogReadRes(ADC_RES);
   analogReadAveraging(32);   
