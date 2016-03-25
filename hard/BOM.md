@@ -31,8 +31,8 @@
   
 caps (electrolytic), SMD (5.3 mm) (25V or better) (‡):
 
-- 22uf :	  2x
-- 33uf : 	  2x
+- 22uf :	  2x 
+- 33uf : 	  2x (e.g. mouser # 647-UWX1E330MCL1MB)
 	
 ICs/semis:
 
