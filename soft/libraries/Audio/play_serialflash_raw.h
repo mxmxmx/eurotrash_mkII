@@ -28,13 +28,14 @@
 #ifndef play_serial_raw_h_
 #define play_serial_raw_h_
 
+#include "Arduino.h"
 #include <AudioStream.h>
 #include <SerialFlash.h>
 
-class AudioPlaySerialRaw : public AudioStream
+class AudioPlaySerialflashRaw : public AudioStream
 {
 public:
-	AudioPlaySerialRaw(void) : AudioStream(0, NULL) { begin(); }
+	AudioPlaySerialflashRaw(void) : AudioStream(0, NULL) { begin(); }
 	void begin(void);
 	bool play(const char *filename);
 	bool seek(const char *filename, const uint32_t start_pos);

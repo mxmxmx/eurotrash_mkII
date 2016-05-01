@@ -40,8 +40,8 @@ u8g_t u8g; // display
 
 AudioPlaySdWav           wav1, wav2, wav3, wav4;
 AudioPlaySdWav           *wav[4] = {&wav1, &wav2, &wav3, &wav4};
-AudioPlaySerialRaw       raw1, raw2, raw3, raw4;
-AudioPlaySerialRaw       *raw[4] = {&raw1, &raw2, &raw3, &raw4};
+AudioPlaySerialflashRaw  raw1, raw2, raw3, raw4;
+AudioPlaySerialflashRaw  *raw[4] = {&raw1, &raw2, &raw3, &raw4};
 AudioEffectFade          fade1, fade2, fade3, fade4, fade1r, fade2r, fade3r, fade4r;
 AudioEffectFade          *fade[8] = {&fade1, &fade2, &fade3, &fade4, &fade1r, &fade2r, &fade3r, &fade4r};
 AudioMixer4              mixL, mixR;
