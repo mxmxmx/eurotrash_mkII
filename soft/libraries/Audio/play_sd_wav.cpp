@@ -334,8 +334,7 @@ void AudioPlaySdWav::update(void)
 	}
 	if (state != STATE_STOP && pre_buffer_status < STREAM) {
 
-		// refill ?
-
+		// refill buffer ?
 		if (pre_buffer_status == EMPTY) {
 
 			buffer_length = wavfile.read(pre_buffer, 512);
@@ -344,8 +343,8 @@ void AudioPlaySdWav::update(void)
 		if (pre_buffer_status == DATA) {
 
 			buffer_length = 512;
-			memcpy(buffer, pre_buffer, buffer_length); 
-       		pre_buffer_status = STREAM;
+			memcpy(buffer, pre_buffer, buffer_length);
+			pre_buffer_status = STREAM;
        	}
        	if (buffer_length == 0) goto end;
 		buffer_offset = 0;
