@@ -334,6 +334,8 @@ void AudioPlaySdWav::update(void)
 	}
 	if (state != STATE_STOP && pre_buffer_status < STREAM) {
 
+		buffer_length = 512;
+		
 		// refill buffer ?
 		if (pre_buffer_status == EMPTY) {
 
@@ -342,12 +344,12 @@ void AudioPlaySdWav::update(void)
 		}
 		if (pre_buffer_status == DATA) {
 
-			buffer_length = 512;
 			memcpy(buffer, pre_buffer, buffer_length);
 			pre_buffer_status = STREAM;
 		}
 		
 		if (buffer_length == 0) goto end;
+		
 		buffer_offset = 0;
 		bool txok = consume(buffer_length);
 		
