@@ -346,15 +346,15 @@ void AudioPlaySdWav::update(void)
 			memcpy(buffer, pre_buffer, buffer_length);
 			pre_buffer_status = STREAM;
 		}
+		
 		if (buffer_length == 0) goto end;
-
-       	buffer_offset = 0;
-       	bool txok = consume(buffer_length);
-       	if (txok) {
+		buffer_offset = 0;
+		bool txok = consume(buffer_length);
+		if (txok) {
        		if (state != STATE_STOP) return;
        	} else goto cleanup;
 	}
-	// we only get to this point when buffer[512] is empty
+	// otherwise, stream from SD
 	else if (state != STATE_STOP && wavfile.available()) {
 		// we can read more data from the file...
 		buffer_length = wavfile.read(buffer, 512);
