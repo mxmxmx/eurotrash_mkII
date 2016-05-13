@@ -41,7 +41,7 @@
 #define STATE_PARSE4			11 // ignoring unknown chunk
 #define STATE_STOP				12
 #define STATE_PAUSE				13
-#define STATE_ALL_OK		    0xFF
+#define STATE_ALL_OK			0xFF
 
 enum pre_buffer_status {
 
@@ -77,28 +77,27 @@ bool AudioPlaySdWav::open_and_parse(const char *filename)
 	__disable_irq();
 	AudioStartUsingSPI();
 	wavfile = SD.open(filename);
-    buffer_length = wavfile.read(pre_buffer, 512);
-    __enable_irq();
-
-    buffer_offset = 0;
+	buffer_length = wavfile.read(pre_buffer, 512);
+	__enable_irq();
+	buffer_offset = 0;
 	data_length = 20;
 	header_offset = 0;
 
-    state_parse = STATE_PARSE1;
-    state_play = STATE_STOP;
-    wav_format = 0xFF;
-    pre_buffer_status = EMPTY;
+	state_parse = STATE_PARSE1;
+	state_play = STATE_STOP;
+	wav_format = 0xFF;
+	pre_buffer_status = EMPTY;
 
     if (!buffer_length) return false;
 
     uint32_t len, size = 512;
-	const uint8_t *p;
-	p = pre_buffer + buffer_offset;
+    const uint8_t *p;
+    p = pre_buffer + buffer_offset;
 
 start:
 	if (size == 0) return false;
 
-    switch (state_parse) {
+	switch (state_parse) {
 
       case STATE_ALL_OK:
       	break;
@@ -221,39 +220,38 @@ bool AudioPlaySdWav::seek(uint32_t pos)
 	
 	byte_offset = (1+pos)<<9;
 	if (byte_offset != prev_byte_offset || pre_buffer_status == HEADER)
-    	pre_buffer_status = EMPTY; // need to fill prefetch buffer ... 
+    	pre_buffer_status = EMPTY; // need to fill prefetch buffer ...
     else
     	pre_buffer_status = DATA; // read from prefetch buffer
 
     __disable_irq();
     AudioStartUsingSPI();
     wavfile.seek(byte_offset); // rewind
-	__enable_irq();
+    __enable_irq();
 
     prev_byte_offset = byte_offset;
-	buffer_length = 0;
-	buffer_offset = 0;
-
-	state_play = state = wav_format;
+    buffer_length = 0;
+    buffer_offset = 0;
+    state_play = state = wav_format;
 	return true;
 }
 
 void AudioPlaySdWav::close(void)
 {
- 	if (wavfile) {
-		__disable_irq();
-		audio_block_t *b1 = block_left;
-		block_left = NULL;
-		audio_block_t *b2 = block_right;
-		block_right = NULL;
-		state = STATE_STOP;
-		state_parse = STATE_STOP;
-		pre_buffer_status = EMPTY;
-		__enable_irq();
-		if (b1) release(b1);
-		if (b2) release(b2);
-		wavfile.close();
-		AudioStopUsingSPI();
+ if (wavfile) {
+	__disable_irq();
+	audio_block_t *b1 = block_left;
+	block_left = NULL;
+	audio_block_t *b2 = block_right;
+	block_right = NULL;
+	state = STATE_STOP;
+	state_parse = STATE_STOP;
+	pre_buffer_status = EMPTY;
+	__enable_irq();
+	if (b1) release(b1);
+	if (b2) release(b2);
+	wavfile.close();
+	AudioStopUsingSPI();
 	}
 }
 
@@ -339,8 +337,7 @@ void AudioPlaySdWav::update(void)
 			buffer_length = wavfile.read(pre_buffer, 512);
 			pre_buffer_status = DATA;
 		}
-        
-       if (pre_buffer_status == DATA) {
+		if (pre_buffer_status == DATA) {
 
        		buffer_length = 512;
        		memcpy(buffer, pre_buffer, buffer_length); 
