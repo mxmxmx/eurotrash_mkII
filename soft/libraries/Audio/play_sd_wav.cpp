@@ -88,126 +88,128 @@ bool AudioPlaySdWav::open_and_parse(const char *filename)
 	wav_format = 0xFF;
 	pre_buffer_status = EMPTY;
 
-    if (!buffer_length) return false;
+	if (!buffer_length) return false;
 
-    uint32_t len, size = 512;
-    const uint8_t *p;
-    p = pre_buffer + buffer_offset;
+	uint32_t len, size = 512;
+	const uint8_t *p;
+	p = pre_buffer + buffer_offset;
 
 start:
+
 	if (size == 0) return false;
 
 	switch (state_parse) {
 
-      case STATE_ALL_OK:
-      	break;
+		case STATE_ALL_OK:
+      		break;
 	  // parse wav file header, is this really a .wav file?
-	  case STATE_PARSE1:
-		len = data_length;
-		if (size < len) len = size;
-		memcpy((uint8_t *)header + header_offset, p, len);
-		header_offset += len;
-		buffer_offset += len;
-		data_length -= len;
-		if (data_length > 0) return false;
-		// parse the header...
-		if (header[0] == 0x46464952 && header[2] == 0x45564157
-		  && header[3] == 0x20746D66 && header[4] >= 16) {
-			if (header[4] > sizeof(header)) {
-				// if such .wav files exist, increasing the
-				// size of header[] should accomodate them...
-				//Serial.println("WAVEFORMATEXTENSIBLE too long");
-				break;
-			}
-			//Serial.println("header ok");
-			p += len;
-			size -= len;
-			data_length = header[4];
-			header_offset = 0;
-			state_parse = STATE_PARSE2;
-			goto start;
-		}
-		//Serial.println("unknown WAV header");
-		break;
+      	case STATE_PARSE1:
 
-	  // check & extract key audio parameters
-	  case STATE_PARSE2:
-		len = data_length;
-		if (size < len) len = size;
-		memcpy((uint8_t *)header + header_offset, p, len);
-		header_offset += len;
-		buffer_offset += len;
-		data_length -= len;
-		if (data_length > 0) return false;
-		if (parse_format()) {
-			//Serial.println("audio format ok");
+	      	len = data_length;
+			if (size < len) len = size;
+			memcpy((uint8_t *)header + header_offset, p, len);
+			header_offset += len;
+			buffer_offset += len;
+			data_length -= len;
+			if (data_length > 0) return false;
+			// parse the header...
+			if (header[0] == 0x46464952 && header[2] == 0x45564157
+			  && header[3] == 0x20746D66 && header[4] >= 16) {
+				if (header[4] > sizeof(header)) {
+					// if such .wav files exist, increasing the
+					// size of header[] should accomodate them...
+					//Serial.println("WAVEFORMATEXTENSIBLE too long");
+					break;
+				}
+				//Serial.println("header ok");
+				p += len;
+				size -= len;
+				data_length = header[4];
+				header_offset = 0;
+				state_parse = STATE_PARSE2;
+				goto start;
+			}
+			//Serial.println("unknown WAV header");
+			break;
+
+		// check & extract key audio parameters
+	  	case STATE_PARSE2:
+			len = data_length;
+			if (size < len) len = size;
+			memcpy((uint8_t *)header + header_offset, p, len);
+			header_offset += len;
+			buffer_offset += len;
+			data_length -= len;
+			if (data_length > 0) return false;
+			if (parse_format()) {
+				//Serial.println("audio format ok");
+				p += len;
+				size -= len;
+				data_length = 8;
+				header_offset = 0;
+				state_parse = STATE_PARSE3;
+				goto start;
+			}
+			//Serial.println("unknown audio format");
+			break;
+
+	  	// find the data chunk
+	  	case STATE_PARSE3: // 10
+			len = data_length;
+			if (size < len) len = size;
+			memcpy((uint8_t *)header + header_offset, p, len);
+			header_offset += len;
+			buffer_offset += len;
+			data_length -= len;
+			if (data_length > 0) return false;
+			//Serial.print("chunk id = ");
+			//Serial.print(header[0], HEX);
+			//Serial.print(", length = ");
+			//Serial.println(header[1]);
 			p += len;
 			size -= len;
+			data_length = header[1];
+			if (header[0] == 0x61746164) {
+				//Serial.print("wav: found data chunk, len=");
+				//Serial.println(data_length);
+				// TODO: verify offset in file is an even number
+				// as required by WAV format.  abort if odd.  Code
+				// below will depend upon this and fail if not even.
+
+				leftover_bytes = 0;
+				state = state_play; // == file type
+				wav_format = state;
+				pre_buffer_status = HEADER; 
+				total_length = data_length;
+				state_parse = STATE_ALL_OK;
+
+			} else {
+				state_parse = STATE_PARSE4;
+			}
+			goto start;
+
+	  	// ignore any extra unknown chunks (title & artist info)
+	  	case STATE_PARSE4: // 11
+			if (size < data_length) {
+				data_length -= size;
+				buffer_offset += size;
+				return false;
+			}
+			p += data_length;
+			size -= data_length;
+			buffer_offset += data_length;
 			data_length = 8;
 			header_offset = 0;
 			state_parse = STATE_PARSE3;
+			//Serial.println("consumed unknown chunk");
 			goto start;
-		}
-		//Serial.println("unknown audio format");
-		break;
-
-	  // find the data chunk
-	  case STATE_PARSE3: // 10
-		len = data_length;
-		if (size < len) len = size;
-		memcpy((uint8_t *)header + header_offset, p, len);
-		header_offset += len;
-		buffer_offset += len;
-		data_length -= len;
-		if (data_length > 0) return false;
-		//Serial.print("chunk id = ");
-		//Serial.print(header[0], HEX);
-		//Serial.print(", length = ");
-		//Serial.println(header[1]);
-		p += len;
-		size -= len;
-		data_length = header[1];
-		if (header[0] == 0x61746164) {
-			//Serial.print("wav: found data chunk, len=");
-			//Serial.println(data_length);
-			// TODO: verify offset in file is an even number
-			// as required by WAV format.  abort if odd.  Code
-			// below will depend upon this and fail if not even.
-
-			leftover_bytes = 0;
-			state = state_play; // == file type
-			wav_format = state;
-			pre_buffer_status = HEADER; 
-			total_length = data_length;
-			state_parse = STATE_ALL_OK;
-
-		} else {
-			state_parse = STATE_PARSE4;
-		}
-		goto start;
-
-	  // ignore any extra unknown chunks (title & artist info)
-	  case STATE_PARSE4: // 11
-		if (size < data_length) {
-			data_length -= size;
-			buffer_offset += size;
-			return false;
-		}
-		p += data_length;
-		size -= data_length;
-		buffer_offset += data_length;
-		data_length = 8;
-		header_offset = 0;
-		state_parse = STATE_PARSE3;
-		//Serial.println("consumed unknown chunk");
-		goto start;
-    }
+	} // end switch
 
 	if (!wavfile || state_parse != STATE_ALL_OK) { 
 		AudioStopUsingSPI();
 		return false;
 	}
-    return true;
+	return true;
 }
 
 bool AudioPlaySdWav::seek(uint32_t pos)
