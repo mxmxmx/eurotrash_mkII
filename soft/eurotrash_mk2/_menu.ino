@@ -256,13 +256,13 @@ void process_buttons(uint16_t _event) {
              _EVENT = _NONE;      
              _REDRAW = 0x1;     
       } 
-      else if (!_b && (millis() - _TIMESTAMP_BUTTON > LONGPRESSED)) { 
+      /*else if (!_b && (millis() - _TIMESTAMP_BUTTON > LONGPRESSED)) { 
               // switch channel : 
-              _ACTIVE_CHANNEL = ~_channel & 1u;
-              //switch_channels(_ACTIVE_CHANNEL); 
-             _TIMESTAMP_BUTTON = millis(); 
-             _EVENT = _DEBOUNCE_L; 
-      }
+               _ACTIVE_CHANNEL = ~_channel & 1u;
+               //switch_channels(_ACTIVE_CHANNEL); 
+               _TIMESTAMP_BUTTON = millis(); 
+               _EVENT = _DEBOUNCE_L; 
+      } */
       break;
     }
     
