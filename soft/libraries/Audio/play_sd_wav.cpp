@@ -347,11 +347,12 @@ void AudioPlaySdWav::update(void)
 			pre_buffer_status = STREAM;
        	}
        	if (buffer_length == 0) goto end;
-		buffer_offset = 0;
-		bool txok = consume(buffer_length);
-		if (txok) {
-			if (state != STATE_STOP) return;
-		} else goto cleanup;
+
+       	buffer_offset = 0;
+       	bool txok = consume(buffer_length);
+       	if (txok) {
+       		if (state != STATE_STOP) return;
+       	} else goto cleanup;
 	}
 	// we only get to this point when buffer[512] is empty
 	else if (state != STATE_STOP && wavfile.available()) {
