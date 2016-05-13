@@ -179,8 +179,8 @@ void _open_new(struct audioChannel* _channel) {
              wav[_id]->close();     
              wav[_id+0x1]->close(); 
              // open new files : 
-             wav[_id]->open(_file_name);
-             wav[_id+0x1]->open(_file_name);
+             wav[_id]->open_and_parse(_file_name);
+             wav[_id+0x1]->open_and_parse(_file_name);
          }
          //  update channel data: 
          _channel->ctrl_res = CTRL_RES[_file + _bank];
