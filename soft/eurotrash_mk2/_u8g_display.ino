@@ -74,6 +74,8 @@ void _do_display()
             // filename    
             u8g_DrawStr(&u8g, 5, *y, _dis);
             leftright();  
+            if (EDIT)  u8g_DrawStr(&u8g, 46, *y, ">>");
+            leftright();  
             u8g_DrawStr(&u8g, 65, *y, _display_file);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
@@ -83,13 +85,13 @@ void _do_display()
             leftright();  
             ++y;
             // start
-            u8g_DrawStr(&u8g, 5, *y, "srt pos  %");
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
             leftright();  
             u8g_DrawStr(&u8g, 100, *y, s);
             leftright();
             ++y;      
             // eof
-            u8g_DrawStr(&u8g, 5, *y, "end pos  %");
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
             u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
@@ -119,15 +121,17 @@ void _do_display()
             u8g_SetDefaultBackgroundColor(&u8g);
             leftright();  
             // start
-            u8g_DrawStr(&u8g, 5, *y, "srt pos  %");
-            leftright();  
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
+            leftright(); 
+            if (EDIT)  u8g_DrawStr(&u8g, 86, *y, ">>");
+            leftright(); 
             u8g_DrawStr(&u8g, 100, *y, s);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
             leftright();  
             // eof
             ++y;
-            u8g_DrawStr(&u8g, 5, *y, "end pos  %");
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
             u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
@@ -151,7 +155,7 @@ void _do_display()
             leftright();  
             // start
             ++y;
-            u8g_DrawStr(&u8g, 5, *y, "srt pos  %");
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
             leftright();  
             u8g_DrawStr(&u8g, 100, *y, s);
             leftright(); 
@@ -162,8 +166,10 @@ void _do_display()
             u8g_SetDefaultBackgroundColor(&u8g); 
             leftright();  
             // eof
-            u8g_DrawStr(&u8g, 5, *y, "end pos  %");
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
+            if (EDIT)  u8g_DrawStr(&u8g, 86, *y, ">>");
+            leftright(); 
             u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
