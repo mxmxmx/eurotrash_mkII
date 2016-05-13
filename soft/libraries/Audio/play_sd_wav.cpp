@@ -39,9 +39,9 @@
 #define STATE_PARSE2			9  // looking for 16 byte format header
 #define STATE_PARSE3			10 // looking for 8 byte data header
 #define STATE_PARSE4			11 // ignoring unknown chunk
-#define STATE_STOP				12
-#define STATE_PAUSE				13
-#define STATE_ALL_OK			0xFF
+#define STATE_STOP				12 // stop .. 
+#define STATE_PAUSE				13 // pause ...
+#define STATE_ALL_OK			0xFF // post-parse
 
 enum pre_buffer_status {
 
@@ -101,11 +101,11 @@ start:
 	switch (state_parse) {
 
 		case STATE_ALL_OK:
-      		break;
-	  // parse wav file header, is this really a .wav file?
-      	case STATE_PARSE1:
+		 break;
 
-	      	len = data_length;
+		case STATE_PARSE1:
+
+		  	len = data_length;
 			if (size < len) len = size;
 			memcpy((uint8_t *)header + header_offset, p, len);
 			header_offset += len;
@@ -130,10 +130,10 @@ start:
 				goto start;
 			}
 			//Serial.println("unknown WAV header");
-			break;
+		 break;
 
 		// check & extract key audio parameters
-	  	case STATE_PARSE2:
+		case STATE_PARSE2:
 			len = data_length;
 			if (size < len) len = size;
 			memcpy((uint8_t *)header + header_offset, p, len);
@@ -151,7 +151,7 @@ start:
 				goto start;
 			}
 			//Serial.println("unknown audio format");
-			break;
+		 break;
 
 	  	// find the data chunk
 	  	case STATE_PARSE3: // 10
@@ -189,6 +189,7 @@ start:
 			goto start;
 
 	  	// ignore any extra unknown chunks (title & artist info)
+
 	  	case STATE_PARSE4: // 11
 			if (size < data_length) {
 				data_length -= size;
@@ -219,22 +220,23 @@ bool AudioPlaySdWav::seek(uint32_t pos)
 		AudioStopUsingSPI();
 		return false;
 	}
-	
+
 	byte_offset = (1+pos)<<9;
+
 	if (byte_offset != prev_byte_offset || pre_buffer_status == HEADER)
-    	pre_buffer_status = EMPTY; // need to fill prefetch buffer ...
-    else
-    	pre_buffer_status = DATA; // read from prefetch buffer
+		pre_buffer_status = EMPTY; // need to fill prefetch buffer ...
+	else
+		pre_buffer_status = DATA; // read from prefetch buffer
 
-    __disable_irq();
-    AudioStartUsingSPI();
-    wavfile.seek(byte_offset); // rewind
-    __enable_irq();
+	__disable_irq();
+	AudioStartUsingSPI();
+	wavfile.seek(byte_offset); // rewind
+	__enable_irq();
 
-    prev_byte_offset = byte_offset;
-    buffer_length = 0;
-    buffer_offset = 0;
-    state_play = state = wav_format;
+	prev_byte_offset = byte_offset;
+	buffer_length = 0;
+	buffer_offset = 0;
+	state_play = state = wav_format;
 	return true;
 }
 
@@ -344,14 +346,13 @@ void AudioPlaySdWav::update(void)
        		buffer_length = 512;
        		memcpy(buffer, pre_buffer, buffer_length); 
        		pre_buffer_status = STREAM;
-       }
-       if (buffer_length == 0) goto end;
+       	}
+       	if (buffer_length == 0) goto end;
 		buffer_offset = 0;
 		bool txok = consume(buffer_length);
 		if (txok) {
 			if (state != STATE_STOP) return;
-		} else 
-			goto cleanup;
+		} else goto cleanup;
 	}
 	// we only get to this point when buffer[512] is empty
 	else if (state != STATE_STOP && wavfile.available()) {
@@ -362,8 +363,7 @@ void AudioPlaySdWav::update(void)
 		bool txok = consume(buffer_length);
 		if (txok) {
 			if (state != STATE_STOP) return;
-		} else
-			goto cleanup;
+		} else goto cleanup;
 	}
 end:	// end of file reached or other reason to stop
 	AudioStopUsingSPI();
@@ -406,8 +406,7 @@ bool AudioPlaySdWav::consume(uint32_t size)
 	const uint8_t *p;
 
 	p = buffer + buffer_offset;
-	if (size == 0) 
-		return false;
+	if (size == 0) return false;
 #if 0
 	Serial.print("AudioPlaySdWav consume, ");
 	Serial.print("size = ");
