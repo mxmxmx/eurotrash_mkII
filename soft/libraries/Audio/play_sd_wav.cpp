@@ -350,9 +350,11 @@ void AudioPlaySdWav::update(void)
 		if (buffer_length == 0) goto end;
 		buffer_offset = 0;
 		bool txok = consume(buffer_length);
+		
 		if (txok) {
-       		if (state != STATE_STOP) return;
-       	} else goto cleanup;
+			if (state != STATE_STOP) return;
+		}
+		else goto cleanup;
 	}
 	// otherwise, stream from SD
 	else if (state != STATE_STOP && wavfile.available()) {
