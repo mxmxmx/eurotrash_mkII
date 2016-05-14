@@ -9,12 +9,14 @@ void _loop()
      leftright();
      
      // fade out voice ?
-     if (!FADE_LEFT) eof_left();  
+     if (!FADE_LEFT) 
+        eof_left();  
 
      leftright();
      
      // fade out voice ?
-     if (!FADE_RIGHT) eof_right(); 
+     if (!FADE_RIGHT) 
+        eof_right(); 
      
      leftright();
    
@@ -27,20 +29,24 @@ void _loop()
      leftright();
      
      // end-of-file / pause file ? 
-     if (_EOF_L_OFF) _PAUSE_EOF_L();   
+     if (_EOF_L_OFF) 
+        _PAUSE_EOF_L();   
    
      leftright();
      
      // end-of-file / pause file ?  
-     if (_EOF_R_OFF) _PAUSE_EOF_R();  
+     if (_EOF_R_OFF) 
+        _PAUSE_EOF_R();  
      
      leftright();
      
      // new file ?
-     if (!audioChannels[LEFT]->state)  _open_new(audioChannels[LEFT]); 
+     if (!audioChannels[LEFT]->state)  
+        _open_new(audioChannels[LEFT]); 
      
      leftright();
      
      // new file ?
-     if (!audioChannels[RIGHT]->state) _open_new(audioChannels[RIGHT]);  
+     if (!audioChannels[RIGHT]->state) 
+        _open_new(audioChannels[RIGHT]);  
 }

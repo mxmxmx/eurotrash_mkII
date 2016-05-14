@@ -179,8 +179,8 @@ void _open_new(struct audioChannel* _channel) {
              wav[_id]->close();     
              wav[_id+0x1]->close(); 
              // open new files : 
-             wav[_id]->open(_file_name);
-             wav[_id+0x1]->open(_file_name);
+             wav[_id]->open_and_parse(_file_name);
+             wav[_id+0x1]->open_and_parse(_file_name);
          }
          //  update channel data: 
          _channel->ctrl_res = CTRL_RES[_file + _bank];
@@ -201,14 +201,14 @@ void init_channels(uint8_t f) {
         audioChannels[i]->file_wav = _file;
         audioChannels[i]->state = _STOP;
         audioChannels[i]->enc0 = 0;
-        audioChannels[i]->encX = CTRL_RESOLUTION;
+        audioChannels[i]->encX = CTRL_RESOLUTION >> 1;
         audioChannels[i]->pos0 = 0;
         audioChannels[i]->posX = 0;
         audioChannels[i]->cv0 = 0;
         audioChannels[i]->cvX = 0;
         audioChannels[i]->ctrl_res = CTRL_RES[_file];
         audioChannels[i]->ctrl_res_eof = CTRL_RES_EOF[_file];
-        audioChannels[i]->eof = CTRL_RESOLUTION * CTRL_RES_EOF[_file];
+        audioChannels[i]->eof = CTRL_RESOLUTION * CTRL_RES_EOF[_file] >> 1;
         audioChannels[i]->_gain = DEFAULT_GAIN;  
         audioChannels[i]->swap = false;
         audioChannels[i]->bank = false;

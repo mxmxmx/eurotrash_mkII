@@ -4,6 +4,9 @@
 *
 */
 
+uint8_t const y_offset[ ] = {11, 21, 36, 52}; 
+
+
 /* --------------------- display simple message --------------------- */
 
 void _display(const char *_disp) 
@@ -51,42 +54,46 @@ void _do_display()
   sprintf(s, "%d",srt);
   sprintf(e, "%d",eof);
   memcpy(_dis, _thebanks[_sel], 0x9);
-
+  
   // below is one ugly hack. there's too much interference w/ timing otherwise:
   leftright();
-  
+      
   switch (_MENU_PAGE[_ACTIVE_CHANNEL]) { 
      
      case FILESELECT: { 
         u8g_FirstPage(&u8g);
         do {
+            uint8_t const *y = y_offset; 
             leftright();  
             // cursor 
-            u8g_DrawBox(&u8g, 0, 4, 129, 16);   
+            u8g_DrawBox(&u8g, 0, 0, 129, 16);   
             leftright();  
             u8g_SetDefaultBackgroundColor(&u8g); 
             leftright(); 
             
             // filename    
-            u8g_DrawStr(&u8g, 5, 15, _dis);
+            u8g_DrawStr(&u8g, 5, *y, _dis);
             leftright();  
-            u8g_DrawStr(&u8g, 65, 15, _display_file);
+            if (EDIT)  u8g_DrawStr(&u8g, 46, *y, ">>");
+            leftright();  
+            u8g_DrawStr(&u8g, 65, *y, _display_file);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
             leftright();  
-            //
-            u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            ++y;
+            u8g_DrawLine(&u8g, 0, *y, 129, *y); 
             leftright();  
+            ++y;
             // start
-            u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
             leftright();  
-            u8g_DrawStr(&u8g, 100, 45, s);
-            leftright(); 
-            
+            u8g_DrawStr(&u8g, 100, *y, s);
+            leftright();
+            ++y;      
             // eof
-            u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
-            u8g_DrawStr(&u8g, 100, 60, e);
+            u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
             
         } while(u8g_NextPage(&u8g)); 
@@ -95,31 +102,38 @@ void _do_display()
      case STARTPOS:  {
         u8g_FirstPage(&u8g);
         do {  
+            uint8_t const *y = y_offset; 
             leftright();  
             // filename  
-            u8g_DrawStr(&u8g, 5, 15, _dis);
+            u8g_DrawStr(&u8g, 5, *y, _dis);
             leftright();  
-            u8g_DrawStr(&u8g, 65, 15, _display_file);
+            u8g_DrawStr(&u8g, 65, *y, _display_file);
             leftright();  
             //
-            u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            ++y;
+            u8g_DrawLine(&u8g, 0, *y, 129, *y); 
             leftright();  
+            
             // cursor 
-            u8g_DrawBox(&u8g, 0, 34, 129, 16); 
+            ++y;
+            u8g_DrawBox(&u8g, 0, (*y)-11, 129, 16); 
             leftright();  
             u8g_SetDefaultBackgroundColor(&u8g);
             leftright();  
             // start
-            u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
-            leftright();  
-            u8g_DrawStr(&u8g, 100, 45, s);
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
+            leftright(); 
+            if (EDIT)  u8g_DrawStr(&u8g, 86, *y, ">>");
+            leftright(); 
+            u8g_DrawStr(&u8g, 100, *y, s);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
             leftright();  
             // eof
-            u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            ++y;
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
-            u8g_DrawStr(&u8g, 100, 60, e);
+            u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
             
         } while(u8g_NextPage(&u8g)); 
@@ -128,29 +142,35 @@ void _do_display()
      case ENDPOS:  {
         u8g_FirstPage(&u8g);
         do {
+            uint8_t const *y = y_offset;
             leftright();  
             // filename
-            u8g_DrawStr(&u8g, 5, 15, _dis);
+            u8g_DrawStr(&u8g, 5, *y, _dis);
             leftright();  
-            u8g_DrawStr(&u8g, 65, 15, _display_file);
+            u8g_DrawStr(&u8g, 65, *y, _display_file);
             leftright();  
             //
-            u8g_DrawLine(&u8g, 0, 25, 129, 25); 
+            ++y;
+            u8g_DrawLine(&u8g, 0, *y, 129, *y); 
             leftright();  
             // start
-            u8g_DrawStr(&u8g, 5, 45, "srt pos: ");
+            ++y;
+            u8g_DrawStr(&u8g, 5, *y, "%  srt");
             leftright();  
-            u8g_DrawStr(&u8g, 100, 45, s);
-            leftright();  
+            u8g_DrawStr(&u8g, 100, *y, s);
+            leftright(); 
+            ++y;
             // cursor
-            u8g_DrawBox(&u8g, 0, 50, 129, 16);    
+            u8g_DrawBox(&u8g, 0, (*y)-11, 129, 16);    
             leftright();  
             u8g_SetDefaultBackgroundColor(&u8g); 
             leftright();  
             // eof
-            u8g_DrawStr(&u8g, 5, 60, "end pos: ");
+            u8g_DrawStr(&u8g, 5, *y, "%  eof");
             leftright();  
-            u8g_DrawStr(&u8g, 100, 60, e);
+            if (EDIT)  u8g_DrawStr(&u8g, 86, *y, ">>");
+            leftright(); 
+            u8g_DrawStr(&u8g, 100, *y, e);
             leftright();  
             u8g_SetDefaultForegroundColor(&u8g);
             leftright();  

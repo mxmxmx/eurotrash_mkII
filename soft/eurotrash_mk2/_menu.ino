@@ -40,6 +40,7 @@ uint16_t _EVENT = 0x0;                // buttons event
 uint32_t _TIMESTAMP_BUTTON_EVENT = 0;
 const uint16_t DEBOUNCE = 100;
 const uint16_t LONGPRESSED = 1000; // in ms
+uint8_t EDIT = 0x0;
 
 // misc messages 
 const char *_SAVE = "    save?";
@@ -55,10 +56,10 @@ const char *_FLASHING       = " FLASHING";
 
 const char *_thebanks[0x4] = 
 {   
-      "L (SD) >",
-      "R (SD) >",
-      "L (FL) >",
-      "R (FL) >"
+      "L (SD)",
+      "R (SD)",
+      "L (FL)",
+      "R (FL)"
 }; // left, right, SD or flash?
 
 enum { 
@@ -107,7 +108,13 @@ enum {
   ERASE,
   FLASHING
 }; // SPI flash progress messages
-  
+
+enum _scroll_mode {
+
+  _SCROLL,
+  _EDIT
+}; // encoder mode: scroll or edit
+
 
 /* ----------------------------------------------------------------------- */
 
@@ -178,8 +185,8 @@ void process_buttons(uint16_t _event) {
       
       uint16_t _b = digitalReadFast(BUTTON_TOP);
       
-      if (_b) { // short press: 
-            _go_to_item( _channel, STARTPOS); 
+      if (_b) { // short press:
+            switch_channels(LEFT); 
             _TIMESTAMP_BUTTON = millis(); 
             _EVENT = _NONE; 
       } 
@@ -196,7 +203,7 @@ void process_buttons(uint16_t _event) {
       uint16_t _b = digitalReadFast(BUTTON_BOT);
       
       if (_b) {  // short press: 
-             _go_to_item( _channel, ENDPOS);  
+             switch_channels(RIGHT);   
              _TIMESTAMP_BUTTON = millis();
              _EVENT = _NONE;
       } 
@@ -213,21 +220,49 @@ void process_buttons(uint16_t _event) {
       uint16_t _b = digitalReadFast(BUTTON_ENC);
       
       if (_b) {  // short press: 
-             if (_MENU_PAGE[ _channel] == FILESELECT) {
-                  if (filedisplay[ _channel] != audioChannels[_channel]->file_wav) update_channel(audioChannels[_channel]);
+
+            uint8_t _item = _MENU_PAGE[ _channel];
+
+            if (EDIT == _EDIT) {
+                 if (_item == FILESELECT) {
+                      if (filedisplay[ _channel] != audioChannels[_channel]->file_wav) update_channel(audioChannels[_channel]);
+                      EDIT = _SCROLL;
+                 }
+                 else { 
+                    EDIT = _SCROLL;  
+                    encoder.setPos(_item);  
+                 }
              }
-             else _go_to_item(_channel, FILESELECT);  
+             else { 
+              
+                EDIT = _EDIT;
+                switch (_item) {
+
+                  case FILESELECT:
+                    encoder.setPos(audioChannels[_channel]->file_wav); 
+                    break;
+                  case STARTPOS:
+                    encoder.setPos(audioChannels[_channel]->enc0); 
+                    break;
+                  case ENDPOS:
+                    encoder.setPos(audioChannels[_channel]->encX); 
+                    break;
+                  default:
+                    break;               
+                } 
+             }
+
              _TIMESTAMP_BUTTON = millis(); 
              _EVENT = _NONE;      
              _REDRAW = 0x1;     
       } 
-      else if (!_b && (millis() - _TIMESTAMP_BUTTON > LONGPRESSED)) { 
+      /*else if (!_b && (millis() - _TIMESTAMP_BUTTON > LONGPRESSED)) { 
               // switch channel : 
-              _ACTIVE_CHANNEL = ~_channel & 1u;
-              switch_channels(_ACTIVE_CHANNEL); 
-             _TIMESTAMP_BUTTON = millis(); 
-             _EVENT = _DEBOUNCE_L; 
-      }
+               _ACTIVE_CHANNEL = ~_channel & 1u;
+               //switch_channels(_ACTIVE_CHANNEL); 
+               _TIMESTAMP_BUTTON = millis(); 
+               _EVENT = _DEBOUNCE_L; 
+      } */
       break;
     }
     
@@ -247,14 +282,30 @@ void process_buttons(uint16_t _event) {
 void switch_channels(uint16_t _channel) {
   
      _ACTIVE_CHANNEL = _channel; 
-     _MENU_PAGE[_channel] = FILESELECT;
-     uint16_t _file = audioChannels[_channel]->file_wav;
-     uint16_t _bank = audioChannels[_channel]->bank;
-     encoder.setPos(_file);
+
+     uint8_t _item = _MENU_PAGE[~_channel & 1u]; // keep item
      
-     _display_file[0x0] = '\xb7';
-     memcpy(_display_file+0x2, DISPLAYFILES[_file + _bank*MAXFILES], DISPLAY_LEN);
-     _REDRAW = 0x1;  
+     switch (_item) {
+
+          case FILESELECT:
+            encoder.setPos(audioChannels[_channel]->file_wav); 
+            break;
+          case STARTPOS:
+            encoder.setPos(audioChannels[_channel]->enc0); 
+            break;
+          case ENDPOS:
+            encoder.setPos(audioChannels[_channel]->encX); 
+            break;
+          default:
+            break;               
+      } 
+      _MENU_PAGE[_channel] = _item;
+      uint16_t _file = audioChannels[_channel]->file_wav;
+      uint16_t _bank = audioChannels[_channel]->bank;
+     
+      _display_file[0x0] = '\xb7';
+      memcpy(_display_file+0x2, DISPLAYFILES[_file + _bank*MAXFILES], DISPLAY_LEN);
+      _REDRAW = 0x1;  
 }
 
 /* ----------------------------------------------------------------------- */
@@ -374,64 +425,90 @@ void update_channel(struct audioChannel* _ch) {
 void process_encoder(uint8_t _channel, int16_t _newval) {
  
   int16_t tmp = _newval;
-  uint16_t _bank = audioChannels[_channel]->bank;
+  int8_t _item = _MENU_PAGE[_channel];
   
   _REDRAW = 0x1;
-  
-  switch (_MENU_PAGE[_channel]) {
+
+  if (EDIT == _EDIT) {
     
-    case FILESELECT: { // file
-     
-           uint16_t max_f = (_bank == _SD) ? (FILECOUNT-1) : (RAW_FILECOUNT-1);
-        
-           if (tmp < 0x0 && DIR)  { 
-                 tmp = 0x0; 
-                 encoder.setPos(tmp); 
-                 DIR = 0x0;
-             }  
-           else if (tmp < 0x0)  {
-                 tmp = max_f; 
-                 encoder.setPos(tmp); 
-                 DIR = 0x1;
-             }
-           else if (tmp > max_f) {
-                tmp = 0x0; 
-                encoder.setPos(tmp); 
-             }
-           
-           memcpy(_display_file+0x2, DISPLAYFILES[tmp + _bank*MAXFILES], DISPLAY_LEN);
-           
-           // decorate the selected file: --> move this to _do_display
-           if (tmp == audioChannels[_channel]->file_wav)  _display_file[0x0] = '\xb7';
-           else _display_file[0x0] = ' ';
-           filedisplay[_channel] = tmp;  
-           break;
-     }
-      case STARTPOS: {  
-        
-            if (tmp < 0) { 
-                 tmp = 0; encoder.setPos(0x0); 
-              }
-            else if (tmp > CTRL_RESOLUTION) { 
-                 tmp = CTRL_RESOLUTION; 
-                 encoder.setPos(tmp);
-               }
-            audioChannels[_channel]->enc0 = tmp;
-            break;
+    switch (_item) {
+      
+      case FILESELECT: { // file
+
+             uint16_t _bank = audioChannels[_channel]->bank;
+             uint16_t max_f = (_bank == _SD) ? (FILECOUNT-1) : (RAW_FILECOUNT-1);
           
-     }
-     case ENDPOS: {
-           if (tmp < 1)  { 
-                tmp = 1; 
-                encoder.setPos(0x1); 
-              }
-           else if (tmp > CTRL_RESOLUTION) {
-                tmp = CTRL_RESOLUTION; 
-                encoder.setPos(tmp);
-              }
-           audioChannels[_channel]->encX = tmp;
-           break;
-     }  
+             if (tmp < 0x0 && DIR)  { 
+                   tmp = 0x0; 
+                   encoder.setPos(tmp); 
+                   DIR = 0x0;
+               }  
+             else if (tmp < 0x0)  {
+                   tmp = max_f; 
+                   encoder.setPos(tmp); 
+                   DIR = 0x1;
+               }
+             else if (tmp > max_f) {
+                  tmp = 0x0; 
+                  encoder.setPos(tmp); 
+               }
+             
+             memcpy(_display_file+0x2, DISPLAYFILES[tmp + _bank*MAXFILES], DISPLAY_LEN);
+             
+             // decorate the selected file: --> move this to _do_display
+             if (tmp == audioChannels[_channel]->file_wav)  _display_file[0x0] = '\xb7';
+             else _display_file[0x0] = ' ';
+             filedisplay[_channel] = tmp;  
+             break;
+       }
+        case STARTPOS: {  
+          
+              if (tmp < 0) { 
+                   tmp = 0; encoder.setPos(0x0); 
+                }
+              else if (tmp > CTRL_RESOLUTION) { 
+                   tmp = CTRL_RESOLUTION; 
+                   encoder.setPos(tmp);
+                 }
+              audioChannels[_channel]->enc0 = tmp;
+              break;
+            
+       }
+       case ENDPOS: {
+             if (tmp < 1)  { 
+                  tmp = 1; 
+                  encoder.setPos(0x1); 
+                }
+             else if (tmp > CTRL_RESOLUTION) {
+                  tmp = CTRL_RESOLUTION; 
+                  encoder.setPos(tmp);
+                }
+             audioChannels[_channel]->encX = tmp;
+             break;
+       }  
+    } // end edit switch
+  }
+  else { // SCROLL
+
+        Serial.print(tmp);
+        Serial.print(" .. ");
+        if (tmp <= 0x1 && _item == ENDPOS)  
+          _item--;
+        else if (tmp <= 0x0)
+          _item--;
+        else _item++;
+        
+        if (_item > ENDPOS) {
+           _item = ENDPOS;
+        }
+        else if (_item < FILESELECT) {
+           _item =  FILESELECT;
+        }
+        
+        Serial.println(_item);
+        _go_to_item( _channel, _item);
+        encoder.setPos(_item);
+   
   }
 }
 

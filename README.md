@@ -1,10 +1,10 @@
 # eurotrash_mkII
 
-### teensy 3.1 / pcm5102a eurorack wav file player 
+### teensy 3.x / pcm5102a eurorack wav file player 
 
 - 2x audio outputs: 16 bit / 44.1kHz / 10VPP
 - 4x CV inputs: 12 bit (100k input impedance; +/- 5V)
-- 2x digital inputs: ( > ~ 3-12V)
+- 2x digital inputs: ( > ~ 3-12V, 100k input impedance)
 - microSD
 - SPI flash (16MB)
 - 128x64 OLED

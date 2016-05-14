@@ -270,8 +270,9 @@ void extract_SD() {  // get files from SD
                       //uint16_t _index = SD.returnFileIndex(_name);
                       //SD_FILE_INDEX[FILECOUNT] = _index;
                       
-                      wav1.play(_name);
-                      delay(5); // delay until audio update();
+                      wav1.open_and_parse(_name);
+                      wav1.seek(0x0);
+                      delay(4); // delay until audio update();
                       file_len = (float)wav1.lengthBytes() * 0.9f;
                       CTRL_RES[FILECOUNT]  = file_len * CTRL_RESOLUTION_INV;       // ctrl resolution pos0/bytes
                       

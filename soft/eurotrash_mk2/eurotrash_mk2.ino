@@ -32,6 +32,10 @@
 #include <SerialFlash.h>
 #include <u8g_i2c.h>
 
+#if F_CPU != 120000000
+#error "Please compile eurotrash firmware with CPU speed 120MHz"
+#endif
+
 File root;
 
 u8g_t u8g; // display 
@@ -259,7 +263,7 @@ void setup() {
   mixR.gain(3, audioChannels[RIGHT]->_gain);
   delay(1000);
   //print_raw_info();
-  //print_wav_info();
+  print_wav_info();
   init_display();
 }
 

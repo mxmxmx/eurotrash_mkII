@@ -37,9 +37,7 @@ class AudioPlaySdWav : public AudioStream
 public:
 	AudioPlaySdWav(void) : AudioStream(0, NULL) { begin(); }
 	void begin(void);
-	bool open(const char *filename);
-	bool play(const char *filename);
-	bool seek(const char *filename, uint32_t pos);
+	bool open_and_parse(const char *filename);
 	bool seek(uint32_t pos);
 	void stop(void);
 	void pause(void);
@@ -60,16 +58,20 @@ private:
 	uint32_t bytes2millis;
 	audio_block_t *block_left;
 	audio_block_t *block_right;
-	uint16_t block_offset;		// how much data is in block_left & block_right
-	uint8_t buffer[512];		// buffer one block of data
-	uint16_t buffer_offset;		// where we're at consuming "buffer"
-	uint16_t buffer_length;		// how much data is in "buffer" (512 until last read)
-	uint8_t header_offset;		// number of bytes in header[]
+	uint16_t block_offset;			// how much data is in block_left & block_right
+	uint8_t buffer[512];			// buffer one block of data
+	uint8_t pre_buffer[512];		// buffer one block of data for prefetch
+	uint8_t pre_buffer_status;      // empty, header, or data
+	uint16_t buffer_offset;			// where we're at consuming "buffer"
+	uint16_t buffer_length;			// how much data is in "buffer" (512 until last read)
+	uint8_t header_offset;			// number of bytes in header[]
 	uint8_t state;
 	uint8_t state_play;
+	uint8_t state_parse;
+	uint8_t wav_format;
 	uint8_t leftover_bytes;
-	uint8_t playseek;
 	uint32_t byte_offset;
+	uint32_t prev_byte_offset;
 };
 
 #endif
