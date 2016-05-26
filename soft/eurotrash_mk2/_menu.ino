@@ -224,16 +224,17 @@ void process_buttons(uint16_t _event) {
             uint8_t _item = _MENU_PAGE[ _channel];
 
             if (EDIT == _EDIT) {
+              
+                 EDIT = _SCROLL;  
                  if (_item == FILESELECT) {
-                      if (filedisplay[ _channel] != audioChannels[_channel]->file_wav) update_channel(audioChannels[_channel]);
-                      EDIT = _SCROLL;
+                  
+                    if (filedisplay[ _channel] != audioChannels[_channel]->file_wav) 
+                        update_channel(audioChannels[_channel]);
                  }
-                 else { 
-                    EDIT = _SCROLL;  
-                    encoder.setPos(_item);  
-                 }
+                 else 
+                    encoder.setPos(_item); 
              }
-             else { 
+             else { // toggle scroll mode
               
                 EDIT = _EDIT;
                 switch (_item) {
@@ -268,7 +269,8 @@ void process_buttons(uint16_t _event) {
     
     case _DEBOUNCE_L: { 
       
-      if (millis() - _TIMESTAMP_BUTTON > LONGPRESSED) _EVENT = _NONE; // resume
+      if (millis() - _TIMESTAMP_BUTTON > LONGPRESSED)
+        _EVENT = _NONE; // resume
       break;
     }
     
@@ -456,8 +458,11 @@ void process_encoder(uint8_t _channel, int16_t _newval) {
              memcpy(_display_file+0x2, DISPLAYFILES[tmp + _bank*MAXFILES], DISPLAY_LEN);
              
              // decorate the selected file: --> move this to _do_display
-             if (tmp == audioChannels[_channel]->file_wav)  _display_file[0x0] = '\xb7';
-             else _display_file[0x0] = ' ';
+             if (tmp == audioChannels[_channel]->file_wav)  
+                _display_file[0x0] = '\xb7';
+             else 
+                _display_file[0x0] = ' ';
+                
              filedisplay[_channel] = tmp;  
              break;
        }
@@ -490,22 +495,17 @@ void process_encoder(uint8_t _channel, int16_t _newval) {
   }
   else { // SCROLL
 
-        Serial.print(tmp);
-        Serial.print(" .. ");
         if (tmp <= 0x1 && _item == ENDPOS)  
           _item--;
         else if (tmp <= 0x0)
           _item--;
         else _item++;
         
-        if (_item > ENDPOS) {
+        if (_item > ENDPOS) 
            _item = ENDPOS;
-        }
-        else if (_item < FILESELECT) {
+        else if (_item < FILESELECT) 
            _item =  FILESELECT;
-        }
-        
-        Serial.println(_item);
+
         _go_to_item( _channel, _item);
         encoder.setPos(_item);
    

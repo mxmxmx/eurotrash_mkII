@@ -25,8 +25,8 @@
  * THE SOFTWARE.
  */
 
-#ifndef play_serial_raw_h_
-#define play_serial_raw_h_
+#ifndef play_serialflash_raw_h_
+#define play_serialflash_raw_h_
 
 #include "Arduino.h"
 #include <AudioStream.h>

@@ -33,7 +33,7 @@
 #include <u8g_i2c.h>
 
 #if F_CPU != 120000000
-#error "Please compile eurotrash firmware with CPU speed 120MHz"
+  #error "Please compile eurotrash firmware with CPU speed 120MHz"
 #endif
 
 File root;

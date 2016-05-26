@@ -12,14 +12,18 @@ void leftright() {
   
  if (LCLK) {  // clock?
  
-       if (audioChannels[LEFT]->state)  _play(audioChannels[LEFT]); 
+       if (audioChannels[LEFT]->state)  
+          _play(audioChannels[LEFT]); 
+          
        LCLK = FADE_LEFT = false;
        _LCLK_TIMESTAMP = millis();
   } 
   
   if (RCLK) { // clock?
  
-       if (audioChannels[RIGHT]->state) _play(audioChannels[RIGHT]);
+       if (audioChannels[RIGHT]->state) 
+          _play(audioChannels[RIGHT]);
+          
        RCLK = FADE_RIGHT = false;
        _RCLK_TIMESTAMP = millis();
    } 
@@ -55,14 +59,15 @@ void _play(struct audioChannel* _channel) {
              uint16_t _file   = _channel->file_wav;
              raw[_numVoice]->seek(FILES[MAXFILES+_file], (_startPos >> 8) << 8); // startPos ~ flash pages
        }
-       else { // SD
-             wav[_numVoice]->seek(_startPos>>9); // startPos ~ byte sectors
-       }   
+       else // SD
+         wav[_numVoice]->seek(_startPos>>9); // startPos ~ byte sectors
+         
        // swap file and fade out previous file :
-        _swap = ~_swap & 1u;
-        fade[_swap + _id*CHANNELS + _bank*0x4]->fadeOut(FADE_OUT); 
-        _channel->swap = _swap;     
-        _channel->state = (_state == _PLAY) ? _PAUSE : _RETRIG; 
+       _swap = ~_swap & 1u;
+       
+       fade[_swap + _id*CHANNELS + _bank*0x4]->fadeOut(FADE_OUT); 
+       _channel->swap = _swap;     
+       _channel->state = (_state == _PLAY) ? _PAUSE : _RETRIG; 
 }
  
 /* ---------------------------- eof, fade out ------------------- */
@@ -138,7 +143,9 @@ void _PAUSE_EOF_L() {
               wav[_swap]->pause(); 
               audioChannels[LEFT]->state = _PLAY; // reset
         }
-        else if (millis() - _LCLK_TIMESTAMP > (audioChannels[LEFT]->eof + _WAIT)) audioChannels[LEFT]->state = _PLAY; // resume 
+        else if (millis() - _LCLK_TIMESTAMP > (audioChannels[LEFT]->eof + _WAIT)) 
+            audioChannels[LEFT]->state = _PLAY; // resume 
+            
         _EOF_L_OFF = false;
     }  
 }
@@ -155,7 +162,9 @@ void _PAUSE_EOF_R() {
               wav[_swap]->pause(); 
               audioChannels[RIGHT]->state = _PLAY; // reset 
         }
-        else if (millis() - _RCLK_TIMESTAMP > (audioChannels[RIGHT]->eof + _WAIT)) audioChannels[RIGHT]->state = _PLAY; // resume
+        else if (millis() - _RCLK_TIMESTAMP > (audioChannels[RIGHT]->eof + _WAIT)) 
+            audioChannels[RIGHT]->state = _PLAY; // resume
+            
         _EOF_R_OFF = false; 
      }  
 }
