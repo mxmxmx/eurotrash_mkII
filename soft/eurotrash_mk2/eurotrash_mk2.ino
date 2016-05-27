@@ -209,7 +209,7 @@ void setup() {
   u8g_InitComFn(&u8g, &u8g_dev_sh1106_128x64_2x_i2c, u8g_com_hw_i2c_fn);
    // splash screen:
   _hello();
-  delay(1000);
+  delay(100);
   
   // init SD: 
   if (!(SD.begin(CS_SD))) {
@@ -266,7 +266,7 @@ void setup() {
   mixR.gain(3, audioChannels[RIGHT]->_gain);
   delay(1000);
   //print_raw_info();
-  print_wav_info();
+  //print_wav_info();
   init_display();
 }
 

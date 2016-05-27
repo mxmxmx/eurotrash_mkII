@@ -324,8 +324,9 @@ void switch_banks(uint16_t _channel) {
        _voice_num++;
        fade[_voice_num]->fadeOut(FADE_OUT);
        
-        // update + reset channel 
-       audioChannels[_channel]->bank = ~_bank & 1u;
+       // update + reset channel 
+       _bank = ~_bank & 1u;
+       audioChannels[_channel]->bank = _bank;;
        audioChannels[_channel]->file_wav = 0x0; 
        encoder.setPos(0x0);
        _MENU_PAGE[_channel] = FILESELECT;
