@@ -201,7 +201,10 @@ void setup() {
   AudioMemory(35);
   SPI.setMOSI(7);
   SPI.setSCK(14);
-  
+  #if F_CPU == 120000000
+   /* uncomment to overclock F_bus: */
+   //SIM_CLKDIV1 = SIM_CLKDIV1_OUTDIV1(0) | SIM_CLKDIV1_OUTDIV2(0) | SIM_CLKDIV1_OUTDIV4(4);
+  #endif
    // init display:
   u8g_InitComFn(&u8g, &u8g_dev_sh1106_128x64_2x_i2c, u8g_com_hw_i2c_fn);
    // splash screen:
