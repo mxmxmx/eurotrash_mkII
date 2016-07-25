@@ -25,8 +25,8 @@
 | 15p  | 2x | - | NP0 / C0G, 25V+ | 
 | 1n  |  4x | - | NP0 / C0G, 25V+ |
 | 3n3  | 2x | - | NP0 / C0G, 25V+ (may be 0805) |
-| 100n |   11x | - | MLCC (25V+) |
-| 470n | 2x | - | MLCC (16V+) |
+| 100n |   10x | - | MLCC (25V+) |
+| 470n | 3x | - | MLCC (16V+) |
 | 2u2  | 2x | - | MLCC (16V+) |
 | 10uF | 3x | - | MLCC, or tantal (16V+) (may be 0805) |
   
